@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>前端日记</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="前端日记">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="前端日记">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端日记">
+  
+    <link rel="alternate" href="/atom.xml" title="前端日记" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">前端日记</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="hello-async-await" class="article article-type-hello" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/11/async-await/" class="article-date">
+  <time datetime="2018-12-11T02:11:56.000Z" itemprop="datePublished">2018-12-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/11/async-await/">async await</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="async-await-到底是怎么回事？"><a href="#async-await-到底是怎么回事？" class="headerlink" title="async/await 到底是怎么回事？"></a>async/await 到底是怎么回事？</h1><p>首先我们来看看 async 函数  的基本语法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">reslove</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//  这里用定时器模拟ajax请求</span></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      reslove(<span class="string">'ok_'</span> + id);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> data = <span class="keyword">await</span> req(<span class="number">12</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main();</span><br></pre></td></tr></table></figure>
+<p><code>async/await</code>能让我们在<code>main</code>函数内采用”同步“的方式进行异步编程，这大大减轻了我们的思维难度，避免了回调地狱和<code>promise</code>的不断<code>then</code>，它是如此的强大 。 但它是怎么做到的呢？难道 js 真能在不阻塞线程的情况下进行同步请求？当然不是这样，接下来我们就一步步分析，看看它到底时如何实现的。首先我们得依次了解以下几个概念：“迭代器”、“可迭代对象”和“生成器”（关于这几个概念的东西其实并不止本文讲的这些，还有很多，这里讲的只是与本次主题相关的部份），然后会一步步的推导出<code>async/await</code>的原理。</p>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><blockquote>
+<p>迭代器就是一种实现了特定接口的对象， 所有迭代器都有一个<code>next</code>方法，每次调用<code>next</code>方法都会  返回一个对象。该对象包含两个属性：<code>done/value</code>。<code>done</code>是一个<code>boolean</code>类型的值，表示迭代是否结束字段，<code>value</code>表示返回值。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一个简单的迭代器，当a大于3时表示该迭代结束。</span></span><br><span class="line"><span class="keyword">let</span> it = &#123;</span><br><span class="line">  a: <span class="number">1</span>,</span><br><span class="line">  next() &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.a &gt; <span class="number">3</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123; <span class="attr">done</span>: <span class="literal">true</span>, <span class="attr">value</span>: <span class="keyword">this</span>.a &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">done</span>: <span class="literal">false</span>, <span class="attr">value</span>: <span class="keyword">this</span>.a++ &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">it.next(); <span class="comment">// &#123;done: false, value: 1&#125;</span></span><br><span class="line">it.next(); <span class="comment">// &#123;done: false, value: 2&#125;</span></span><br><span class="line">it.next(); <span class="comment">// &#123;done: false, value: 3&#125;</span></span><br><span class="line">it.next(); <span class="comment">// &#123;done: true, value: 4&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="for…of"><a href="#for…of" class="headerlink" title="for…of"></a>for…of</h3><p>for…of 是 es6 新增的，用于遍历迭代器。我们最常用的是用来遍历数组。</p>
+<p>语法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 遍历数组</span></span><br><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> item <span class="keyword">of</span> arr) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(item);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="comment">// 2</span></span><br><span class="line"><span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>既然上面说了<code>for...of</code>是用于遍历迭代器的，那我们在第一节<a href="##迭代器">迭代器</a>中写的<code>it</code>就能用<code>for...of</code>来遍历了哦，下面我们来试试：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> item <span class="keyword">of</span> it) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(item);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Uncaught TypeError: it is not iterable</span></span><br></pre></td></tr></table></figure>
+<p>上面的代码是不会  成功运行，报错  信息上面已经写出，翻译过来就是“it 不是可迭代的”，什么叫不是可迭代的呢，这就需要  知道另外一个概念：<a href="##可迭代对象">可迭代对象</a></p>
+<h2 id="可迭代对象"><a href="#可迭代对象" class="headerlink" title="可迭代对象"></a>可迭代对象</h2><p>我们先将第一节<a href="##迭代器">迭代器</a>的代码  做一点改变：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> it = &#123;</span><br><span class="line">  a: <span class="number">1</span>,</span><br><span class="line">  <span class="comment">// 加了一个函数</span></span><br><span class="line">  [<span class="built_in">Symbol</span>.iterator]: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  next() &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.a &gt; <span class="number">3</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123; <span class="attr">done</span>: <span class="literal">true</span>, <span class="attr">value</span>: <span class="keyword">this</span>.a &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">done</span>: <span class="literal">false</span>, <span class="attr">value</span>: <span class="keyword">this</span>.a++ &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 再次运用</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> item <span class="keyword">of</span> it) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(item);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="comment">// 2</span></span><br><span class="line"><span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p><code>[Symbol.iterator]</code>这个函数有点奇怪，但是这个不是本次的重点，有机会我们下次专门来聊它，现在只需要记住加上这个函数后就能成功的遍历出值。其实这里的<code>it</code>在添加上这个函数后就变成了  一个可迭代对象。<code>for...of</code>是专门用来遍历  可迭代对象的， 在运行时会首先去调用可迭代对象的<code>[Symbol.iterator]</code>函数，并判断返回的的值  是否是一个迭代器，也就是是否有<code>next</code>函数。 然后根据<code>next</code>函数返回的对象的<code>done</code>属性的值，如果是<code>false</code>就继续调用<code>next</code>函数，将<code>value</code>的值赋值给上面<code>item</code>,如果是<code>true</code>遍历结束。</p>
+<p>一般我们没有自己写迭代器，规范里为我们定义了一类名为<a href="##生成器">生成器</a>的函数，调用  它就能得到一个可迭代对象。</p>
+<h2 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h2><blockquote>
+<p>生成器就是一个值的生产者，我们通过迭代器接口的 <code>next()</code> 调用一次提取出一个值。</p>
+</blockquote>
+<p>语法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生成器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> *<span class="title">generator</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> a = <span class="number">2</span> + (<span class="keyword">yield</span> <span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用返回一个迭代器</span></span><br><span class="line"><span class="keyword">let</span> it = generator();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用迭代器的next方法回依次返回yield的值</span></span><br><span class="line"><span class="keyword">let</span> varVal_1 = it.next(); <span class="comment">// varVal=&gt;&#123;done:false, value: 3&#125; 这里返回的是第一个yield出来的值</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> varVal_2 = it.next(<span class="number">2</span>); <span class="comment">// &#123;done: true, value: 4&#125; 这里返回值是由最后的return 返回的</span></span><br></pre></td></tr></table></figure>
+<p>这里有两点需要注意：</p>
+<blockquote>
+<ul>
+<li>1、函数名前面的<code>*</code>，表示这个函数是一个生成器函数，而不是普通函数，调用这个函数会返回一个迭代器;</li>
+<li>2、函数体内的<code>yield</code>，是只能用在生成器函数中使用，在其他函数中调用会报错;</li>
+</ul>
+</blockquote>
+<h3 id="yield"><a href="#yield" class="headerlink" title="yield"></a>yield</h3><p><code>yield</code>有两个重要的作用：</p>
+<blockquote>
+<ul>
+<li>1、 暂停当前生成器函数的执行，并向外抛出一个值，而不阻塞主线程，直到  下次调用<code>next</code>函数,至于为什么能暂停，请看上一节<a href="##迭代器">迭代器</a>。</li>
+<li>2、 接受外部通过<code>next(val)</code>调用传入的  值<code>val</code>，供函数内部  使用</li>
+</ul>
+</blockquote>
+<h3 id="生产器执行过程"><a href="#生产器执行过程" class="headerlink" title="生产器执行过程"></a>生产器执行过程</h3><blockquote>
+<ol>
+<li>调用生成器函数<code>generator</code>,然后返回一个迭代器<code>it</code>;</li>
+<li>通过调用  迭代器<code>it</code>的<code>next()</code>方法（第一次调用<code>next</code>，不能传递参数，传了也会被忽略），让生成器运行到第一个<code>yield</code>处，并返回<code>yield</code>后的值；</li>
+<li>再次调用迭代器<code>it</code>的<code>next(val)</code>方法（<code>val</code>值可选，需要就传）， 让生成器运行到下个<code>yield</code>处，并返回<code>yield</code>后的值（返回的值是一个对象：<code>{done: boolean, value: yield后面的值}</code>）；</li>
+<li>重复的调用迭代器<code>it</code>的<code>next(val)</code>方法，都会执行第 3 步的过程，直到运行到生成器函数的结束或者遇到<code>return</code>;</li>
+</ol>
+</blockquote>
+<p>下面我们看看我们发送 ajax 请求的一般操作：</p>
+<p>在没有<code>Promise</code>之前， 我们发送请求，都是通过回调的方式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id, cb</span>) </span>&#123;</span><br><span class="line">  ajax(<span class="string">'http://xxxx?id='</span> + id, cb);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">req(<span class="number">12</span>, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(res);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>下面是<code>Promise</code>版本：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">reslove</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//  这里用定时器模拟ajax请求</span></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      reslove(<span class="string">'ok_'</span> + id);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">req(<span class="number">12</span>).then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(res);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>Promise</code>版本解决了  令人诟病的回调地狱。但是这样就是最好的解决方案了吗？其实按照我们一般人的  思维来说更喜欢写  下面这样的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 发送请求</span></span><br><span class="line">  <span class="keyword">let</span> res = ajax(<span class="string">'http://xxxx?id='</span>+id)；</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> data = req(<span class="number">12</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;</span><br><span class="line">main();</span><br></pre></td></tr></table></figure>
+<p>上面代码更加符合我们一般人的思维方式，没有思维负担，发送请求，等待  请求返回，使用返回值。没有回调，没有 then，一切都像是同步执行一样。但是上面的代码并不会像我们想的那样去运行， 那有  没有解决方案  来实现  呢？当然有，通过生成器就能办到。</p>
+<p>接下来是生成器版本：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用生产起函数“main”，得到一个可迭代对象“it”</span></span><br><span class="line"><span class="keyword">let</span> it = main(<span class="number">12</span>);</span><br><span class="line"><span class="comment">// 调用it，会运行到第一个yield</span></span><br><span class="line"><span class="keyword">let</span> res = it.next();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模拟ajax请求</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> fetch(id).then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">    it.next(<span class="string">'ok_'</span> + res);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 生成器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>* <span class="title">main</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> data = <span class="keyword">yield</span> req(id);</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模拟请求库</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fetch</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      resolve(id);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面看着好像比之前的代码更加的长了，写的东西更加的多了，但是先不看其他部份， 我们先看看<code>main</code>函数的内部，发送请求， 然后直接打印返回值<code>res</code>，这不是实现了同步的方式调用么？</p>
+<p> 我们来  一步一步的分析下是如何实现在<code>main</code>方法内“同步 ”执行的：</p>
+<blockquote>
+<ol>
+<li>首先调用<code>main(12)</code>函数（生成器函数）， 返回一个迭代器<code>it</code>；</li>
+<li>调用<code>it</code>的<code>next()</code>方法，让<code>main</code>运行到<code>yield</code>处，然后就会去执行<code>yield</code>后的语句<code>req(12)</code>,<code>main</code>会“暂停”在这里，直到下次<code>next</code> 执行；</li>
+<li>执行环境进入<code>req</code>函数体内， 执行请求<code>fetch</code>返回一个<code>promise</code>；</li>
+<li>当数据返回后调用<code>then</code>,在<code>then</code>中执行<code>it.next(res)</code>，恢复<code>main</code> 执行，并将<code>res</code>赋值给<code>data</code>；</li>
+<li>打印<code>data</code>。</li>
+</ol>
+</blockquote>
+<p>虽然上面的<code>main</code>函数内实现了“同步”运行，但是问题还是有很多，首先<code>it</code>变量在全局中定义，<code>req</code>函数中还依赖了这个变量，这样请求就无所谓封装了，所以也就根本没法在真实项目中有实际的用处。</p>
+<p>其实 tj 大神就为我们写好了这样一个工具函数<a href="https://github.com/tj/co" target="_blank" rel="noopener">co</a>，能自动的去运行<code>main</code>函数，而不需要我们自己去不断的反复调用<code>next</code>运行，有了<a href="https://github.com/tj/co" target="_blank" rel="noopener">co</a>后，我们可以将上面的例子改写入如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> co = <span class="built_in">require</span>(<span class="string">'co'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模拟请求库</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fetch</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      resolve(id);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> fetch(id).then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">co(<span class="function"><span class="keyword">function</span>* <span class="title">main</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> data = <span class="keyword">yield</span> req(id);</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这样就好很多了，我们只需要关注<code>main</code>函数内容的逻辑编写，而且还是按照我们希望的“同步”方式编写，没有了烦人的回调地狱，没有了 then，整个世界都变得如此的美好了。</p>
+<p>但是如此牛逼的工具到是怎么做到的，为了探索其中的秘密，我们再进一步看看它到底是什么原理。我们可以自己写一个类似的工具函数，这里借用下《你不知道的 javascript》里面的代码，去掉了异常处理：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params">gen</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> args = [].slice.call( <span class="built_in">arguments</span>, <span class="number">1</span>),;</span><br><span class="line">  <span class="comment">// 在当前上下文中初始化生成器</span></span><br><span class="line">  <span class="keyword">let</span> it = gen.apply( <span class="keyword">this</span>, args );</span><br><span class="line">  <span class="comment">// 返回一个promise用于生成器完成</span></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> <span class="title">handleNext</span>(<span class="params">value</span>)</span>&#123; <span class="comment">// 对下一个yield出的值运行</span></span><br><span class="line">      <span class="keyword">let</span> next = it.next( value );</span><br><span class="line">      <span class="keyword">return</span> (<span class="function"><span class="keyword">function</span> <span class="title">handleResult</span>(<span class="params">next</span>)</span>&#123;</span><br><span class="line">        <span class="comment">// 生成器运行完毕了吗?</span></span><br><span class="line">        <span class="keyword">if</span> (next.done) &#123;</span><br><span class="line">          <span class="keyword">return</span> next.value;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 否则继续运行</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(next.value)</span><br><span class="line">          .then(handleNext);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)(next);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">req</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">reslove</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//  这里用定时器模拟ajax请求</span></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      reslove(<span class="string">'ok_'</span> + id);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> *<span class="title">main</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> data = <span class="keyword">yield</span> req(id);</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">run(main, <span class="number">12</span>);</span><br></pre></td></tr></table></figure>
+<p>还是来分析下<code>run</code>函数的运行步骤：</p>
+<blockquote>
+<ol>
+<li>首先调用<code>gen</code>函数返回一个迭代器(<code>it</code>这里采用了 apply 调用是为了绑定当前上下文和处理参数，这不是我们本次研究的重点，不清楚的可以看看 apply);</li>
+<li>然后会返回一个立即决议的 promise，紧接着就会去调用 promise 后的 then，运行<code>handleNext</code>函数，此时没有任何值传人，所以<code>value</code>为<code>undefined</code>；</li>
+<li>然后调用<code>it</code>的<code>next(value)</code>方法，由于迭代器的第一次<code>next</code>调用不用传值，由上一步可知此时<code>value</code>就是<code>undefined</code>，和没有传值是一样的，<code>main</code>函数运行至第一个<code>yield</code>处，然后会去计算<code>req(id)</code>并返回一个<code>promise</code>（为了区分这里的用<code>promise_1</code>代替），然后赋值给<code>run</code>函数内的<code>next</code>变量，此时<code>next</code>的值为<code>{done:false, value: promise_1}</code></li>
+<li>接着会调用立即执行函数<code>handleNext({done:false, value: promise_1})</code>，判断迭代器<code>it</code>是否完成<code>if (next.done)</code>,此时的<code>next.done</code>为<code>false</code>，所以会运行<code>else</code>,调用<code>Promise.resolve(promise_1)</code>等待<code>promise_1</code>决议后调用后面的<code>then</code>方法内的<code>handleNext</code>, 并将决议后的值（”ok_12”）传人<code>handleNext</code>函数内。</li>
+<li>再次调用<code>it.next( value )</code>，此时的<code>value</code>为<code>&quot;ok_12&quot;</code>,恢复<code>main</code>的执行，并将<code>&quot;ok_12&quot;</code>赋值给<code>data</code>。</li>
+<li><code>mian</code>函数继续往下运行打印<code>data</code>，没有<code>yield</code>和<code>return</code>，函数运行结束,默认返回<code>undefined</code>。</li>
+<li>第 5 步调用<code>it.next( value )</code>， 得到的返回值<code>{done:true, value: undefined}</code>。</li>
+<li> 然后调用<code>handleResult</code>，进行<code>if</code> 判断，此时<code>next.done</code>的值为<code>true</code>， 表示迭代结束，直接返回<code>next.value</code>(undefined), <code>run</code>函数运行完毕。</li>
+</ol>
+</blockquote>
+<p>这段运行还是有点  麻烦，需要结合着前面讲的<a href="##迭代器">迭代器</a>、<a href="##可迭代对象">可迭代对象</a>来看，这里  只是对生产器的整个过程做了一个大致演示，到这里我们基本上就实现了异步编程的“同步 ”化，和<code>async/await</code>是不是很像了呢？</p>
+<p>本次的关于<code>async/await</code>就这些了，时间比较匆忙所以错误的地方在所难免，希望看官们多多的指正。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/11/async-await/" data-id="cjpj7ve2o00027m00i6ie1epg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/async-awaait/">async awaait</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hello-world" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/11/hello-world/" class="article-date">
+  <time datetime="2018-12-11T01:58:34.049Z" itemprop="datePublished">2018-12-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/11/hello-world/">Hello World</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/11/hello-world/" data-id="cjpj7fne700007m00lbx88zk5" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/async-awaait/">async awaait</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/async-awaait/" style="font-size: 10px;">async awaait</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/11/async-await/">async await</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/11/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 晓冰<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
