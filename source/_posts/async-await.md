@@ -2,7 +2,7 @@
 layout: hello
 title: async await
 date: 2018-12-11 10:11:56
-tags: async awaait
+tags: javascript
 ---
 
 # async/await 到底是怎么回事？
