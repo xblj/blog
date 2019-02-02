@@ -1,7 +1,10 @@
 ---
 title: 升级vue-cli3.0
 date: 2018-12-21 00:54:25
-tags:
+tags: vue javascript
+category:
+  - javascript
+  - vue
 ---
 
 # vue-cli 升级到 3.x 问题集
@@ -21,7 +24,7 @@ tags:
 从报错信息中可以看出是缺少对应的 loader。那我们就找个 loader 呗，我们可以把`docs`块里面的作为纯文本来加载，所以可以使用`raw-loader`。接下来又有问题了，我们咋向配置中加入新的 loader 呢。
 
 1. 在项目根目录，新建`vue.config.js`文件；
-1. 填写内容：
+2. 填写内容：
 
    ```javascript
    module.exports = {
@@ -39,7 +42,7 @@ tags:
 
    > vue-cli 3.0 使用的是[webpack-chain](https://github.com/neutrinojs/webpack-chain)，多看看文档，配置起来也不是太难，其实还是有点难。
 
-1. 再次运行`npm run serve`,运行结果如下：
+3. 再次运行`npm run serve`,运行结果如下：
 
    {% asset_img success.png %}
 

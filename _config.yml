@@ -5,8 +5,8 @@
 # Site
 title: 前端日记
 subtitle:
-description:
-keywords:
+description: 前端技术分享
+keywords: javascript vue node
 author: 晓冰
 language: zh-CN
 timezone:
@@ -73,7 +73,8 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+# theme: landscape
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
