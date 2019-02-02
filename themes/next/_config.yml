@@ -139,8 +139,8 @@ exturl: false
 menu:
   home: / || home
   #about: /about/ || user
-  #tags: /tags/ || tags
-  #categories: /categories/ || th
+  tags: /tags/ || tags
+  categories: /categories/ || th
   archives: /archives/ || archive
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
@@ -510,7 +510,7 @@ pangu: false
 #swiftype_key:
 
 # Baidu Analytics ID
-#baidu_analytics:
+baidu_analytics: fdbcad949d44968558c1a18cd1647abe
 
 # Growingio Analytics ID
 # Copyright 2015-2018 GrowingIO, Inc. More info available at https://www.growingio.com

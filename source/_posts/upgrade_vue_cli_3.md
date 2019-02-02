@@ -1,7 +1,7 @@
 ---
 title: 升级vue-cli3.0
 date: 2018-12-21 00:54:25
-tags: vue javascript
+tags: [vue, javascript]
 category:
   - javascript
   - vue
