@@ -1,11 +1,13 @@
 ---
-title: Node.js指南（五）-事件循环
+title: Node.js指南（五）-事件循环（译）
 draft: true
 date: 2019-01-24 22:50:54
 tags:
 categories:
   - Node.js指南
 ---
+
+[原文地址](https://flaviocopes.com/)
 
 # 事件循环
 
