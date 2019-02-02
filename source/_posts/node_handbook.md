@@ -181,12 +181,11 @@ setImmediate(() => {
 
 **在 javascript 代码，想要延迟执行函数，学习如何使用 setTimeout 和 setInterval 来安排函数在未来某个时间执行**
 
-- [setTimeout()](<#setTimout()>)
+- [setTimeout()](#setTimout)
   - [零延迟](#零延迟)
-- [setInterval()](#setInterval)
 - [递归 setTimeout()](#递归-setTimeout)
 
-### setTimeout()
+### setTimeout
 
 在编写[javascript](https://flaviocopes.com/javascript/)代码时，你可能想要延迟执行函数。
 
