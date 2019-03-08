@@ -1,6 +1,6 @@
 ---
 title: linux_4
-tags:
+tags: Linux
 ---
 ## 第四章 首次登入与在线求助
 
